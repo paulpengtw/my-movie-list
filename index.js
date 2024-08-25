@@ -3,29 +3,9 @@ const INDEX_URL = BASE_URL + '/api/movies/'
 const POSTER_URL = BASE_URL + '/posters/'
 
 const movies = []
+const MOVIES_PER_PAGE = 12
 
 const dataPanel = document.querySelector('#data-panel')
-
-
-function addToFavorite(id) {
-  console.log(id)
-}
-
-function showMovieModal(id) {
-  const modalTitle = document.querySelector('#movie-modal-title')
-  const modalImage = document.querySelector('#movie-modal-image')
-  const modalDate = document.querySelector('#movie-modal-date')
-  const modalDescription = document.querySelector('#movie-modal-description')
-  axios.get(INDEX_URL + id).then((response) => {
-    const data = response.data.results
-    modalTitle.innerText = data.title
-    modalDate.innerText = 'Release date: ' + data.release_date
-    modalDescription.innerText = data.description
-    modalImage.innerHTML = `<img src="${
-      POSTER_URL + data.image
-    }" alt="movie-poster" class="img-fluid">`
-  })
-}
 
 // 監聽 data panel
 dataPanel.addEventListener('click',function onPanelClicked(event){
@@ -92,7 +72,6 @@ const searchInput = document.querySelector('#search-input')
   renderMovieList(filteredMovies) //重新渲染 #data-panel 裡的 template
   })
 
-  
 function addToFavorite(id) { //在 addToFavorite 傳入一個 id
     const list = JSON.parse(localStorage.getItem('favoriteMovies')) || [] //第一次使用收藏功能時，此時 local storage 是空的，會取回 null 值，因此，list 會得到一個空陣列。而之後 local storage 有東西時，就會拿到 localStorage.getItem('favoriteMovies') 取回來的資料了！
     const movie = movies.find((movie) => movie.id === id) // 請 find 去電影總表中查看，找出 id 相同的電影物件回傳，暫存在 movie
@@ -103,10 +82,41 @@ function addToFavorite(id) { //在 addToFavorite 傳入一個 id
     localStorage.setItem('favoriteMovies', JSON.stringify(list)) // 接著呼叫 localStorage.setItem，把更新後的收藏清單同步到 local storage
   }
 
+  function getMoviesByPage(page) {
+    const startIndex = (page - 1) * MOVIES_PER_PAGE   //計算起始 index
+    return movies.slice(startIndex, startIndex + MOVIES_PER_PAGE)  //回傳切割後的新陣列
+  }
+  function showMovieModal(id) {
+    const modalTitle = document.querySelector('#movie-modal-title')
+    const modalImage = document.querySelector('#movie-modal-image')
+    const modalDate = document.querySelector('#movie-modal-date')
+    const modalDescription = document.querySelector('#movie-modal-description')
+    axios.get(INDEX_URL + id).then((response) => {
+      const data = response.data.results
+      modalTitle.innerText = data.title
+      modalDate.innerText = 'Release date: ' + data.release_date
+      modalDescription.innerText = data.description
+      modalImage.innerHTML = `<img src="${
+        POSTER_URL + data.image
+      }" alt="movie-poster" class="img-fluid">`
+    })
+  }
+
+function renderPaginator(amount) {
+  const numberOfPages = Math.ceil(amount / MOVIES_PER_PAGE) //計算總頁數
+  let rawHTML = '' //宣告一個變數，用來儲存要呈現在畫面上的 HTML 字串，作為 template
+  for (let page = 1; page <= numberOfPages; page++) { //透過迴圈來建立分頁器的每一個頁碼
+    rawHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${page}">${page}</a></li>` // 我們在每個a 標籤中，加上 data-page 屬性來標注頁數，方便後續取用頁碼。
+  }
+
+  paginator.innerHTML = rawHTML //把建立好的 HTML 字串放進 paginator 元素裡
+}
+
 axios
   .get(INDEX_URL)
   .then((response) => {
     movies.push(...response.data.results)
-    renderMovieList(movies) //新增這裡
+    renderPaginator(movies.length) // 取得 Index API 資料之後，呼叫 renderPaginator()，並傳入資料的總筆數
+    renderMovieList(getMoviesByPage(1)) // 取得 Index API 資料之後，呼叫 renderMovieList()，並傳入第一頁的資料
 })
   .catch((err) => console.log(err))
