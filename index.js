@@ -20,13 +20,13 @@ dataPanel.addEventListener('click',function onPanelClicked(event){
   }
 })
 
-function renderMovieListGroup(data) {
-  let rawHTML = `<div class="container text"> 
+function renderMovieCard(data) {
+  let rawHTML = `<div class="container"> 
               <ul class="list-group list-group-flush">`
   data.forEach((item) => {
     rawHTML += `
-  <li class="list-group-item"><div class="row-3">${item.title} <button class="btn btn-primary btn-show-movie" data-bs-toggle="modal" data-bs-target="#movie-modal" data-id="${item.id}">More</button>
-          <button class="btn btn-info btn-add-favorite" data-id="${item.id}")>+</button></div></li>
+  <li class="list-group-item"><div class="row-3 d-flex justify-content-between">${item.title} <div><button class="btn btn-primary btn-show-movie" data-bs-toggle="modal" data-bs-target="#movie-modal" data-id="${item.id}">More</button>
+          <button class="btn btn-info btn-add-favorite" data-id="${item.id}")>+</button></div></div></li>
             `
       // title, id 隨著每個 item 改變
   })
@@ -84,7 +84,7 @@ const searchInput = document.querySelector('#search-input')
     renderPaginator(filteredMovies.length) // 呼叫 renderPaginator 並傳入篩選後的電影數量
     renderMovieList(getMoviesByPage(1)) // 呼叫 renderMovieList 並傳入第一頁的資料
     // 
-    renderMovieListGroup(getMoviesByPage(1)) // 呼叫 renderMovieListGroup 並傳入第一頁的資料
+    renderMovieCard(getMoviesByPage(1)) // 呼叫 renderMovieCard 並傳入第一頁的資料
   })
 
 function addToFavorite(id) { //在 addToFavorite 傳入一個 id
@@ -119,7 +119,7 @@ function addToFavorite(id) { //在 addToFavorite 傳入一個 id
     const page = Number(event.target.dataset.page) //取得點擊的頁碼
     renderMovieList(getMoviesByPage(page)) //取得點擊的頁碼，並呼叫 getMoviesByPage 來取得該頁的電影資料，再呼叫 renderMovieList 來更新畫面
     // trial
-    renderMovieListGroup(getMoviesByPage(page)) //取得點擊的頁碼，並呼叫 getMoviesByPage 來取得該頁的電影資料，再呼叫 renderMovieListGroup 來更新畫面
+    renderMovieCard(getMoviesByPage(page)) //取得點擊的頁碼，並呼叫 getMoviesByPage 來取得該頁的電影資料，再呼叫 renderMovieCard 來更新畫面
   })
 
   function showMovieModal(id) {
@@ -145,6 +145,6 @@ axios
     renderPaginator(movies.length) // 取得 Index API 資料之後，呼叫 renderPaginator()，並傳入資料的總筆數
     renderMovieList(getMoviesByPage(1)) // 取得 Index API 資料之後，呼叫 renderMovieList()，並傳入第一頁的資料
     // trial
-    renderMovieListGroup(getMoviesByPage(1)) // 取得 Index API 資料之後，呼叫 renderMovieListGroup()，並傳入第一頁的資料
+    renderMovieCard(getMoviesByPage(1)) // 取得 Index API 資料之後，呼叫 renderMovieCard()，並傳入第一頁的資料
 })
   .catch((err) => console.log(err))
