@@ -8,6 +8,8 @@ const MOVIES_PER_PAGE = 12
 
 const dataPanel = document.querySelector('#data-panel')
 const paginator = document.querySelector('#paginator')
+const switchToCardView = document.querySelector('#card-icon')
+const switchToListView = document.querySelector('#list-icon')
 
 // 監聽 data panel
 dataPanel.addEventListener('click',function onPanelClicked(event){
