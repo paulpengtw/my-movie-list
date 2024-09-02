@@ -8,8 +8,7 @@ const MOVIES_PER_PAGE = 12
 
 const dataPanel = document.querySelector('#data-panel')
 const paginator = document.querySelector('#paginator')
-const switchToCardView = document.querySelector('#card-icon')
-const switchToListView = document.querySelector('#list-icon')
+const searchBar = document.querySelector('#search-form')
 
 // 監聽 data panel
 dataPanel.addEventListener('click',function onPanelClicked(event){
@@ -19,6 +18,17 @@ dataPanel.addEventListener('click',function onPanelClicked(event){
     showMovieModal(Number(event.target.dataset.id))
   } else if (event.target.matches('.btn-add-favorite')) {
     addToFavorite(Number(event.target.dataset.id))
+  }
+})
+
+// 監聽 switch view
+searchBar.addEventListener('click', function onSwitchViewClicked(event){
+  if (event.target.matches('.fa-th')) {
+    console.log('card-icon clicked')
+    renderMovieCard(getMoviesByPage(1))
+  } else if (event.target.matches('.fa-bars')) {
+    console.log('list-icon clicked')
+    renderMovieList(getMoviesByPage(1))
   }
 })
 
