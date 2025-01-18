@@ -5,10 +5,20 @@ const POSTER_URL = BASE_URL + '/posters/'
 const movies = []
 let filteredMovies = []   //儲存符合篩選條件的項目
 const MOVIES_PER_PAGE = 12
+let clickPage = 1
 
 const dataPanel = document.querySelector('#data-panel')
 const paginator = document.querySelector('#paginator')
 const searchBar = document.querySelector('#search-form')
+  
+// 監聽 switch view
+searchBar.addEventListener('click', (e) => {
+  if (e.target.matches('.fa-bars')) {
+    renderMovieCard(getMoviesByPage(clickPage))
+  } else if (e.target.matches('.fa-th')) {
+    renderMovieList(getMoviesByPage(clickPage))
+  }
+})
 
 // 監聽 data panel
 dataPanel.addEventListener('click',function onPanelClicked(event){
@@ -21,19 +31,8 @@ dataPanel.addEventListener('click',function onPanelClicked(event){
   }
 })
 
-// 監聽 switch view
-searchBar.addEventListener('click', function onSwitchViewClicked(event){
-  if (event.target.matches('.fa-th')) {
-    console.log('card-icon clicked')
-    renderMovieCard(getMoviesByPage(1))
-  } else if (event.target.matches('.fa-bars')) {
-    console.log('list-icon clicked')
-    renderMovieList(getMoviesByPage(1))
-  }
-})
-
 function renderMovieCard(data) {
-  let rawHTML = `<div class="container"> 
+  let rawHTML = `<div class="container" id="movie-card"> 
               <ul class="list-group list-group-flush">`
   data.forEach((item) => {
     rawHTML += `
@@ -51,7 +50,7 @@ function renderMovieList(data) {
   let rawHTML = ''
   data.forEach((item) => {
     // title, image, id 隨著每個 item 改變
-    rawHTML += `<div class="col-sm-3">
+    rawHTML += `<div class="col-sm-3" id="movie-list">
     <div class="mb-2">
       <div class="card">
         <img src="${
@@ -128,10 +127,12 @@ function addToFavorite(id) { //在 addToFavorite 傳入一個 id
   paginator.addEventListener('click', function onPaginatorClicked(event) {  //監聽分頁器的點擊事件
     if (event.target.tagName !== 'A') return //若點擊的不是 <a> </a> 標籤，就不做任何事情  
     // console.log(event.target.dataset.page) //測試用
-    const page = Number(event.target.dataset.page) //取得點擊的頁碼
-    renderMovieList(getMoviesByPage(page)) //取得點擊的頁碼，並呼叫 getMoviesByPage 來取得該頁的電影資料，再呼叫 renderMovieList 來更新畫面
-    // trial
-    renderMovieCard(getMoviesByPage(page)) //取得點擊的頁碼，並呼叫 getMoviesByPage 來取得該頁的電影資料，再呼叫 renderMovieCard 來更新畫面
+    clickPage = Number(event.target.dataset.page) //取得點擊的頁碼
+    if (document.querySelector('#movie-list')) { //判斷目前是在 list view 還是 card view
+      renderMovieList(getMoviesByPage(clickPage))
+    } else if (document.querySelector('#movie-card')) {
+      renderMovieCard(getMoviesByPage(clickPage)) //取得點擊的頁碼，並呼叫 getMoviesByPage 來取得該頁的電影資料，再呼叫 renderMovieCard 來更新畫面
+    }
   })
 
   function showMovieModal(id) {
